@@ -4,15 +4,15 @@ A web application that lets customers plan grocery purchases and place pre-order
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui |
-| Animation | Framer Motion + GSAP |
-| Server state | TanStack Query |
-| Forms | React Hook Form + Zod |
-| Backend | Node.js + Express.js 5 + TypeScript |
-| ORM | Prisma |
-| Database | PostgreSQL |
+| Layer        | Technology                                         |
+| ------------ | -------------------------------------------------- |
+| Frontend     | Next.js 16 + TypeScript + Tailwind CSS + shadcn/ui |
+| Animation    | Framer Motion + GSAP                               |
+| Server state | TanStack Query                                     |
+| Forms        | React Hook Form + Zod                              |
+| Backend      | Node.js + Express.js 5 + TypeScript                |
+| ORM          | Prisma                                             |
+| Database     | PostgreSQL                                         |
 
 ## Project Structure
 
@@ -50,4 +50,3 @@ Smart_Glossary/
 - `progress-tracker.md` — Implementation progress
 - `ai-workflow-rules.md` — Agent workflow rules
 - `ANTIGRAVITY-BUILD-PLAYBOOK.md` — Phased build prompts
-
