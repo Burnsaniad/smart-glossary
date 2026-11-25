@@ -21,6 +21,8 @@ These items do not mean application code has been implemented.
 ## Completed — Audit & Infrastructure (Phase 0)
 - [x] Full repository audit performed and verified (2026-11-25).
 - [x] Phased roadmap (11 phases) created in audit-and-roadmap artifact.
+- [x] Git history cleaned: `backend/node_modules/` untracked and removed from git history (was incorrectly committed); `.gitignore` corrected and committed.
+- [x] Merged `master` → `dev`: all 4 diagram PNGs now present and tracked in `dev` branch.
 - [x] All missing project folders created:
   - `docs/diagrams/`
   - `backend/prisma/`
@@ -54,7 +56,7 @@ These items do not mean application code has been implemented.
 - `.gitignore`: **Present but empty**.
 - `.env.example`: **Absent**.
 - `tsconfig.json`: **Absent** (backend and frontend).
-- Docs/diagrams: `docs/diagrams/` folder now created but **4 PNG diagrams not in repo**.
+- Docs/diagrams: `docs/diagrams/` folder exists and all **4 PNG diagrams confirmed present** (`sequence_diagram.png`, `er-diagram-light-elk.png`, `activity-diagram.png`, `class-diagram-light.png`).
 - File alias issue: AGENTS.md references `project.md` and `architecture.md` but actual files are `project-overview.md` and `architecture-context.md`. **Needs renaming or reference update**.
 
 ## Next Up (Phase 1 — Pending Owner Approval)
