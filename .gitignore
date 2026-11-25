@@ -1,0 +1,32 @@
+# Env — node_modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env files — never commit real secrets
+.env
+.env.local
+.env.*.local
+
+# TypeScript build output
+dist/
+build/
+
+# Next.js
+.next/
+out/
+
+# Prisma generated
+# (prisma/client is auto-generated — regenerate with prisma generate)
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
