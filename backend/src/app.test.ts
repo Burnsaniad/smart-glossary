@@ -19,8 +19,8 @@ describe('GET /health', () => {
     expect(res.body).toMatchObject({
       status: 'ok',
       environment: 'test',
-      database: 'not_configured',
     });
+    expect(['configured', 'not_configured']).toContain(res.body.database);
     expect(typeof res.body.timestamp).toBe('string');
   });
 });

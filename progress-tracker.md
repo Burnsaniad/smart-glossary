@@ -34,7 +34,7 @@ Await owner approval of Phase 1. Next: Phase 2 (Prisma Data Model) — requires 
 - [x] `backend/tsconfig.test.json` — includes test files for ESLint parser project resolution.
 
 ### Scripts (`backend/package.json`)
-- [x] `dev` — Node.js `--watch` + `--experimental-strip-types` (no transpiler needed).
+- [x] `dev` — `tsx watch src/server.ts` for TypeScript development execution with NodeNext `.js` imports.
 - [x] `build` — `tsc --project tsconfig.build.json`.
 - [x] `type-check` — `tsc --noEmit`.
 - [x] `lint` / `lint:fix` — ESLint over `src/`.
@@ -68,7 +68,7 @@ Await owner approval of Phase 1. Next: Phase 2 (Prisma Data Model) — requires 
 ### Linting & Formatting
 - [x] `backend/eslint.config.js` — ESLint flat config with `typescript-eslint` strict + stylistic rules + prettier disables.
 - [x] `backend/.prettierrc.json` — Prettier config (single quotes, trailing commas, 100 print width).
-- [x] `backend/.prettierignore` — Ignores dist, node_modules, JSON, migrations.
+- [x] `backend/.prettierignore` — Ignores dist, node_modules, JSON, migrations, generated Prisma code.
 - [x] Additional packages installed: `@eslint/js`, `typescript-eslint`.
 
 ### Testing
@@ -82,8 +82,12 @@ Await owner approval of Phase 1. Next: Phase 2 (Prisma Data Model) — requires 
 
 ### Database / Prisma
 - [x] `backend/prisma/schema.prisma` — Skeleton schema with generator + datasource. No entities yet (Phase 2).
+- [x] `backend/prisma.config.ts` — Prisma CLI datasource configuration aligned with Prisma 7.
+- [x] `backend/src/lib/db.ts` — Lazy Prisma 7 PostgreSQL adapter singleton; no DB access during import.
+- [x] Prisma packages aligned at `prisma`, `@prisma/client`, and `@prisma/adapter-pg` 7.10.1.
+- [x] Generated Prisma client verified and excluded from source control and lint/format scans.
 - [x] `backend/.env.example` — All placeholder keys documented (no real values).
-- [x] `backend/.env` — `DATABASE_URL` left empty; non-secret dev defaults only.
+- [x] `backend/.env` — Local environment may be configured for development; real credentials remain uncommitted.
 
 ### Verified Checks (all run, all pass)
 | Command | Result |

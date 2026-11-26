@@ -19,7 +19,7 @@ build/
 out/
 
 # Prisma generated
-# (prisma/client is auto-generated — regenerate with prisma generate)
+backend/src/generated/
 
 # OS
 .DS_Store
@@ -40,4 +40,3 @@ code-standards.md
 progress-tracker.md
 project-overview.md
 ui-context.md
-
