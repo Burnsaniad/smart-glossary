@@ -3,10 +3,10 @@
 Update after every meaningful planning, design, or implementation change. Mark implementation complete only after inspecting the repository and verifying it.
 
 ## Current Phase
-**Phase 2 — Prisma Data Model — COMPLETE.**
+**Phase 3 — Authentication and Authorization — COMPLETE.**
 
 ## Current Goal
-Await owner approval of Phase 2. Next: Phase 3 (Authentication and Authorization) after review.
+Await owner review and approval of Phase 3. Subsequent phases remain unstarted.
 
 ---
 
@@ -124,14 +124,36 @@ Await owner approval of Phase 2. Next: Phase 3 (Authentication and Authorization
 | `npm run format:check` | ✅ All files formatted |
 | `npm run build` | ✅ Compiled to `dist/` |
 
+### Phase 3: Authentication and Authorization (2026-11-27)
+- [x] Customer-only self-registration with Zod validation, normalized email, and bcrypt password hashing.
+- [x] Login validation with generic invalid-credential responses and inactive-account rejection.
+- [x] Secure signed httpOnly JWT access cookie plus bearer-token support for API clients.
+- [x] Logout clears the access cookie.
+- [x] `/api/v1/auth/register`, `/api/v1/auth/login`, `/api/v1/auth/logout`, and `/api/v1/auth/me` routes.
+- [x] Authentication middleware rehydrates current user state from Prisma on every protected request.
+- [x] Role guards for `CUSTOMER`, `SHOP_OWNER`, `SHOP_STAFF`, and `ADMIN`.
+- [x] Shop-owner and staff shop-membership guards.
+- [x] Client-supplied role/status values are ignored or validated server-side.
+- [x] Authentication route rate limiting.
+- [x] Google sign-in remains out of scope; no OAuth/OIDC implementation was added.
+
+### Phase 3 Verified Checks (all run, all pass)
+| Command | Result |
+|---|---|
+| `npm test` | ✅ 17/17 tests passed |
+| `npm run type-check` | ✅ No errors |
+| `npm run lint` | ✅ No errors |
+| `npm run format:check` | ✅ All files formatted |
+| `npm run build` | ✅ Compiled to `dist/` |
+
 ---
 
-## Implementation Status (Verified — 2026-11-26)
+## Implementation Status (Verified — 2026-11-27)
 - Repository/package manager: **npm 12.2.1 / Node.js 26.12.0**.
 - Backend: Express 5.3.0, TypeScript 5.9.3, fully configured. **Foundation complete.**
 - Frontend: Directory scaffolded. **No Next.js app yet (Phase 10).**
 - PostgreSQL/Prisma schema: **Phase 2 data model complete; 2 migrations applied.**
-- Authentication/authorization: **Not implemented (Phase 3).**
+- Authentication/authorization: **Phase 3 complete.**
 - Shop approval/catalogue: **Not implemented (Phase 4).**
 - Grocery lists/budget: **Not implemented (Phase 5).**
 - Order lifecycle: **Not implemented (Phase 6).**

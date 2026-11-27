@@ -24,8 +24,6 @@ const envSchema = z.object({
   /* Auth */
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
   JWT_EXPIRES_IN: z.string().default('15m'),
-  REFRESH_TOKEN_SECRET: z.string().min(16, 'REFRESH_TOKEN_SECRET must be at least 16 characters'),
-  REFRESH_TOKEN_EXPIRES_IN: z.string().default('7d'),
 
   /* CORS */
   CORS_ORIGINS: z.string().default('http://localhost:3000'),

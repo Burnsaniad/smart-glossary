@@ -21,6 +21,7 @@ import morgan from 'morgan';
 import { env, corsOrigins, isDatabaseConfigured } from './config/env.js';
 import { notFoundHandler } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { authRouter } from './modules/auth/auth.routes.js';
 
 export function createApp() {
   const app = express();
@@ -58,8 +59,8 @@ export function createApp() {
     });
   });
 
-  /* ── API v1 routes (mounted in subsequent phases) ───────────────── */
-  // app.use('/api/v1', router);
+  /* ── API v1 routes ──────────────────────────────────────────────── */
+  app.use('/api/v1/auth', authRouter);
 
   /* ── 404 and error handling (must be last) ──────────────────────── */
   app.use(notFoundHandler);
