@@ -1,15 +1,6 @@
 // ─── Prisma Schema ─────────────────────────────────────────────────────────
 // Smart Grocery Planner & QR Pickup System
-//
-// This is the skeleton schema for Phase 1.
-// Full entity definitions are implemented in Phase 2 (Prisma Data Model).
-//
-// Prisma 7 / Client 7 configuration:
-// The datasource `url` has been moved to `prisma.config.ts` (Prisma CLI config)
-// and the PrismaClient now receives a driver adapter. See src/lib/db.ts.
-//
-// Do NOT run `prisma migrate dev` until DATABASE_URL is configured and
-// the Phase 2 entity design has been reviewed and approved.
+// Phase 2 — Prisma Data Model
 // ───────────────────────────────────────────────────────────────────────────
 
 generator client {
@@ -21,7 +12,381 @@ datasource db {
   provider = "postgresql"
 }
 
-// ─── Phase 2 entities will be added here ────────────────────────────────────
-// User, Shop, ShopStaff, Category, Product,
-// GroceryList, GroceryListItem, CustomerOrder, OrderItem,
-// QRPickup, Payment, Notification, OrderChangeRequest, OrderChangeItem
+enum UserRole {
+  CUSTOMER
+  SHOP_OWNER
+  SHOP_STAFF
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ShopStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  PREPARING
+  READY_FOR_PICKUP
+  CANCELLED
+  COMPLETED
+  EXPIRED
+}
+
+enum SourceListChoice {
+  KEEP
+  CLEAR
+}
+
+enum PaymentMethod {
+  CASH
+}
+
+enum PaymentStatus {
+  CONFIRMED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  READ
+}
+
+enum NotificationType {
+  NEW_ORDER
+  ORDER_ACCEPTED
+  ORDER_REJECTED
+  ORDER_READY
+  PAYMENT_CONFIRMED
+  ORDER_COMPLETED
+  ORDER_CHANGED
+  SYSTEM
+}
+
+enum OrderChangeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+enum OrderChangeAction {
+  ADD
+  UPDATE
+  REMOVE
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  phone        String?
+  passwordHash String
+  role         UserRole
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  ownedShops        Shop[]               @relation("ShopOwner")
+  approvedShops     Shop[]               @relation("ShopApprover")
+  shopMembership    ShopStaff?
+  groceryLists      GroceryList[]
+  customerOrders    CustomerOrder[]      @relation("CustomerOrders")
+  requestedChanges  OrderChangeRequest[] @relation("RequestedChanges")
+  confirmedPayments Payment[]            @relation("PaymentConfirmer")
+  notifications     Notification[]
+  qrVerifications   QRPickup[]           @relation("QRVerifier")
+
+  @@index([role, status])
+  @@map("users")
+}
+
+model Shop {
+  id           String     @id @default(cuid())
+  ownerId      String
+  approvedById String?
+  name         String
+  address      String
+  phone        String?
+  status       ShopStatus @default(PENDING)
+  approvedAt   DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  owner      User            @relation("ShopOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  approvedBy User?           @relation("ShopApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  staff      ShopStaff[]
+  categories Category[]
+  products   Product[]
+  orders     CustomerOrder[]
+
+  @@index([ownerId])
+  @@index([approvedById])
+  @@index([status])
+  @@map("shops")
+}
+
+model ShopStaff {
+  id        String   @id @default(cuid())
+  shopId    String
+  userId    String   @unique
+  joinedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shop Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([shopId])
+  @@map("shop_staff")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  shopId      String
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  shop     Shop      @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([shopId, name])
+  @@index([shopId])
+  @@map("categories")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  shopId      String
+  categoryId  String
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(12, 2)
+  unit        String
+  isAvailable Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  shop             Shop              @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  category         Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  groceryListItems GroceryListItem[]
+  orderItems       OrderItem[]
+  changeItems      OrderChangeItem[]
+
+  @@unique([shopId, name])
+  @@index([shopId, isAvailable])
+  @@index([categoryId])
+  @@map("products")
+}
+
+model GroceryList {
+  id         String   @id @default(cuid())
+  customerId String
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner  User              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  items  GroceryListItem[]
+  orders CustomerOrder[]   @relation("SourceGroceryList")
+
+  @@index([customerId])
+  @@map("grocery_lists")
+}
+
+model GroceryListItem {
+  id            String   @id @default(cuid())
+  groceryListId String
+  productId     String
+  quantity      Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  groceryList GroceryList @relation(fields: [groceryListId], references: [id], onDelete: Cascade)
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([groceryListId, productId])
+  @@index([productId])
+  @@map("grocery_list_items")
+}
+
+model CustomerOrder {
+  id                   String            @id @default(cuid())
+  customerId           String
+  shopId               String
+  sourceGroceryListId  String?
+  sourceListChoice     SourceListChoice?
+  status               OrderStatus       @default(PENDING)
+  subtotal             Decimal           @db.Decimal(12, 2)
+  total                Decimal           @db.Decimal(12, 2)
+  acceptedAt           DateTime?
+  preparationStartedAt DateTime?
+  readyAt              DateTime?
+  cancelledAt          DateTime?
+  completedAt          DateTime?
+  expiresAt            DateTime?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  customer          User                 @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Restrict)
+  shop              Shop                 @relation(fields: [shopId], references: [id], onDelete: Restrict)
+  sourceGroceryList GroceryList?         @relation("SourceGroceryList", fields: [sourceGroceryListId], references: [id], onDelete: SetNull)
+  items             OrderItem[]
+  qrPickups         QRPickup[]
+  payment           Payment?
+  changeRequests    OrderChangeRequest[]
+  notifications     Notification[]
+
+  @@index([customerId, status])
+  @@index([shopId, status])
+  @@index([sourceGroceryListId])
+  @@index([createdAt])
+  @@map("customer_orders")
+}
+
+model OrderItem {
+  id                  String   @id @default(cuid())
+  orderId             String
+  productId           String
+  productNameSnapshot String
+  unitPriceSnapshot   Decimal  @db.Decimal(12, 2)
+  quantity            Int
+  lineTotal           Decimal  @db.Decimal(12, 2)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  order       CustomerOrder     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  changeItems OrderChangeItem[]
+
+  @@unique([orderId, productId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+model QRPickup {
+  id           String    @id @default(cuid())
+  orderId      String
+  tokenHash    String    @unique
+  issuedAt     DateTime  @default(now())
+  expiresAt    DateTime
+  consumedAt   DateTime?
+  revokedAt    DateTime?
+  consumedById String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  order      CustomerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  consumedBy User?         @relation("QRVerifier", fields: [consumedById], references: [id], onDelete: SetNull)
+
+  @@index([orderId, isActive])
+  @@index([expiresAt])
+  @@map("qr_pickups")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  orderId       String        @unique
+  confirmedById String
+  amount        Decimal       @db.Decimal(12, 2)
+  method        PaymentMethod @default(CASH)
+  status        PaymentStatus @default(CONFIRMED)
+  confirmedAt   DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  order       CustomerOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  confirmedBy User          @relation("PaymentConfirmer", fields: [confirmedById], references: [id], onDelete: Restrict)
+
+  @@index([confirmedById])
+  @@index([confirmedAt])
+  @@map("payments")
+}
+
+model Notification {
+  id            String              @id @default(cuid())
+  userId        String
+  orderId       String?
+  type          NotificationType
+  channel       NotificationChannel
+  status        NotificationStatus  @default(PENDING)
+  title         String
+  message       String
+  sentAt        DateTime?
+  readAt        DateTime?
+  failedAt      DateTime?
+  failureReason String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order CustomerOrder? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([orderId])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model OrderChangeRequest {
+  id            String            @id @default(cuid())
+  orderId       String
+  requestedById String
+  status        OrderChangeStatus @default(PENDING)
+  reason        String?
+  responseNote  String?
+  respondedAt   DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  order       CustomerOrder     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  requestedBy User              @relation("RequestedChanges", fields: [requestedById], references: [id], onDelete: Restrict)
+  items       OrderChangeItem[]
+
+  @@index([orderId, status])
+  @@index([requestedById])
+  @@map("order_change_requests")
+}
+
+model OrderChangeItem {
+  id               String            @id @default(cuid())
+  changeRequestId  String
+  orderItemId      String?
+  productId        String
+  action           OrderChangeAction
+  currentQuantity  Int?
+  proposedQuantity Int
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  changeRequest OrderChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Cascade)
+  orderItem     OrderItem?         @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
+  product       Product            @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([changeRequestId])
+  @@index([orderItemId])
+  @@index([productId])
+  @@map("order_change_items")
+}

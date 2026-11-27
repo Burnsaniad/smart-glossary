@@ -3,10 +3,10 @@
 Update after every meaningful planning, design, or implementation change. Mark implementation complete only after inspecting the repository and verifying it.
 
 ## Current Phase
-**Phase 1 — Repository Foundation & Database Setup — COMPLETE.**
+**Phase 2 — Prisma Data Model — COMPLETE.**
 
 ## Current Goal
-Await owner approval of Phase 1. Next: Phase 2 (Prisma Data Model) — requires DATABASE_URL to be set and diagrams reviewed.
+Await owner approval of Phase 2. Next: Phase 3 (Authentication and Authorization) after review.
 
 ---
 
@@ -89,6 +89,32 @@ Await owner approval of Phase 1. Next: Phase 2 (Prisma Data Model) — requires 
 - [x] `backend/.env.example` — All placeholder keys documented (no real values).
 - [x] `backend/.env` — Local environment may be configured for development; real credentials remain uncommitted.
 
+### Phase 2: Prisma Data Model (2026-11-26)
+- [x] `backend/prisma/schema.prisma` — Added User, Shop, ShopStaff, Category, Product, GroceryList, GroceryListItem, CustomerOrder, OrderItem, QRPickup, Payment, Notification, OrderChangeRequest, and OrderChangeItem.
+- [x] Added confirmed role, shop, order, payment, notification, and change-request enums.
+- [x] Added shop ownership/approval relations and unique staff membership (`ShopStaff.userId`).
+- [x] Added grocery-list ownership/items and unresolved mixed-shop scope preserved without splitting orders.
+- [x] Added order/shop/customer relations, price and name snapshots, and source-grocery-list optionality.
+- [x] Added opaque QR token hash storage, expiry/revoke/consume fields, replacement history support, and one-active-token database constraint.
+- [x] Added payment uniqueness per order and staff confirmer relation.
+- [x] Added notification delivery/status fields and order-change request/item relations.
+- [x] Added monetary and quantity check constraints through a follow-up migration.
+- [x] Created and applied migration `20261126085033_phase_2_prisma_data_model`.
+- [x] Created and applied migration `20261126085500_phase_2_business_constraints`.
+- [x] Ran Prisma format, validate, generate, and migrate status.
+
+### Phase 2 Verified Checks (all run, all pass)
+| Command | Result |
+|---|---|
+| `npx prisma validate` | ✅ Schema valid |
+| `npx prisma migrate status` | ✅ 2 migrations; database up to date |
+| `npm run db:generate` | ✅ Prisma 7.10.1 client generated |
+| `npm test` | ✅ 5/5 tests passed |
+| `npm run type-check` | ✅ No errors |
+| `npm run lint` | ✅ No errors |
+| `npm run format:check` | ✅ All files formatted |
+| `npm run build` | ✅ Compiled to `dist/` |
+
 ### Verified Checks (all run, all pass)
 | Command | Result |
 |---|---|
@@ -104,7 +130,7 @@ Await owner approval of Phase 1. Next: Phase 2 (Prisma Data Model) — requires 
 - Repository/package manager: **npm 12.2.1 / Node.js 26.12.0**.
 - Backend: Express 5.3.0, TypeScript 5.9.3, fully configured. **Foundation complete.**
 - Frontend: Directory scaffolded. **No Next.js app yet (Phase 10).**
-- PostgreSQL/Prisma schema: Skeleton only. **Full schema in Phase 2.**
+- PostgreSQL/Prisma schema: **Phase 2 data model complete; 2 migrations applied.**
 - Authentication/authorization: **Not implemented (Phase 3).**
 - Shop approval/catalogue: **Not implemented (Phase 4).**
 - Grocery lists/budget: **Not implemented (Phase 5).**
@@ -148,7 +174,7 @@ Await owner approval of Phase 1. Next: Phase 2 (Prisma Data Model) — requires 
 ## Current Architecture Decisions (Confirmed)
 - Next.js 16 + TypeScript frontend.
 - Express.js 5 + TypeScript 5.9.x backend.
-- PostgreSQL + Prisma 8.
+- PostgreSQL + Prisma 7.10.1.
 - Modular monolith; no MVP microservices.
 - Backend authoritative for business rules, totals, authorization, state transitions.
 - One shop per order; multiple staff per shop; one shop per staff.
