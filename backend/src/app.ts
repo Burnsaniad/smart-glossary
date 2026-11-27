@@ -22,6 +22,8 @@ import { env, corsOrigins, isDatabaseConfigured } from './config/env.js';
 import { notFoundHandler } from './middlewares/notFound.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { authRouter } from './modules/auth/auth.routes.js';
+import { adminShopRouter, shopRouter } from './modules/shops/shop.routes.js';
+import { catalogueRouter } from './modules/catalogue/catalogue.routes.js';
 
 export function createApp() {
   const app = express();
@@ -61,6 +63,10 @@ export function createApp() {
 
   /* ── API v1 routes ──────────────────────────────────────────────── */
   app.use('/api/v1/auth', authRouter);
+  app.use('/api/v1/shops', shopRouter);
+  app.use('/api/v1/shops', catalogueRouter);
+  app.use('/api/v1/admin', adminShopRouter);
+  app.use('/api/v1/catalogue', catalogueRouter);
 
   /* ── 404 and error handling (must be last) ──────────────────────── */
   app.use(notFoundHandler);

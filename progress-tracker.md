@@ -3,10 +3,10 @@
 Update after every meaningful planning, design, or implementation change. Mark implementation complete only after inspecting the repository and verifying it.
 
 ## Current Phase
-**Phase 3 — Authentication and Authorization — COMPLETE.**
+**Phase 4 — Shops & Catalogue Management — COMPLETE.**
 
 ## Current Goal
-Await owner review and approval of Phase 3. Subsequent phases remain unstarted.
+Await owner review and approval of Phase 4. Subsequent phases remain unstarted.
 
 ---
 
@@ -146,6 +146,31 @@ Await owner review and approval of Phase 3. Subsequent phases remain unstarted.
 | `npm run format:check` | ✅ All files formatted |
 | `npm run build` | ✅ Compiled to `dist/` |
 
+### Phase 4: Shops & Catalogue Management (2026-11-27)
+- [x] Authenticated shop registration creates a `PENDING` shop and promotes a customer to `SHOP_OWNER`.
+- [x] Administrators can list pending shops and approve or reject them.
+- [x] Approved shops are exposed through public shop/catalogue browsing.
+- [x] Shop owners can manage their shop profile.
+- [x] Shop owners can list, assign, and remove staff for their own shop.
+- [x] Staff assignment uses an existing active account and enforces the unique one-shop membership.
+- [x] Staff and owner routes enforce role, ownership, and shop membership.
+- [x] Shop categories support shop-scoped create, list, update, and delete operations.
+- [x] Products support shop-scoped create, list, update, and delete operations.
+- [x] Product category ownership is validated against the selected shop.
+- [x] Only shop owners can change product price or availability.
+- [x] Public catalogue endpoints expose only products from approved shops and available products.
+- [x] No image storage, notification, order, QR, payment, or frontend implementation was added.
+
+### Phase 4 Verified Checks (all run, all pass)
+| Command | Result |
+|---|---|
+| `npm test` | ✅ 32/32 tests passed |
+| `npm run type-check` | ✅ No errors |
+| `npm run lint` | ✅ No errors |
+| `npm run format:check` | ✅ All files formatted |
+| `npm run build` | ✅ Compiled to `dist/` |
+| `npx prisma validate` | ✅ Schema valid |
+
 ---
 
 ## Implementation Status (Verified — 2026-11-27)
@@ -154,7 +179,7 @@ Await owner review and approval of Phase 3. Subsequent phases remain unstarted.
 - Frontend: Directory scaffolded. **No Next.js app yet (Phase 10).**
 - PostgreSQL/Prisma schema: **Phase 2 data model complete; 2 migrations applied.**
 - Authentication/authorization: **Phase 3 complete.**
-- Shop approval/catalogue: **Not implemented (Phase 4).**
+- Shop approval/catalogue: **Phase 4 complete.**
 - Grocery lists/budget: **Not implemented (Phase 5).**
 - Order lifecycle: **Not implemented (Phase 6).**
 - QR issue/replace/verify: **Not implemented (Phase 7).**
@@ -185,7 +210,7 @@ Await owner review and approval of Phase 3. Subsequent phases remain unstarted.
 3. **[BLOCKING Phase 7]** Exact start of 1-hour QR validity (assumed: QR issuance after acceptance).
 4. **[BLOCKING Phase 6–7]** Separate no-show/order-expiry duration and timer start point.
 5. **[BLOCKING Phase 9]** Email/SMS providers, event-channel matrix, retry/failure policy.
-6. **[Needed before Phase 3]** Is Google Sign-In required?
+6. **[Resolved]** Google Sign-In is not in scope for the current MVP.
 7. **[BLOCKING Phase 6]** Post-preparation change-request timeout/decline behavior.
 8. **[Post-MVP unless reprioritized]** Pantry scope, expiration window, MVP priority.
 9. **[Needs confirmation before Phase 5]** Monthly budget MVP priority.
