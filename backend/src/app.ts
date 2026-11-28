@@ -24,6 +24,8 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { authRouter } from './modules/auth/auth.routes.js';
 import { adminShopRouter, shopRouter } from './modules/shops/shop.routes.js';
 import { catalogueRouter } from './modules/catalogue/catalogue.routes.js';
+import { groceryListRouter } from './modules/grocery-lists/grocery-list.routes.js';
+import { budgetRouter } from './modules/budgets/budget.routes.js';
 
 export function createApp() {
   const app = express();
@@ -67,6 +69,8 @@ export function createApp() {
   app.use('/api/v1/shops', catalogueRouter);
   app.use('/api/v1/admin', adminShopRouter);
   app.use('/api/v1/catalogue', catalogueRouter);
+  app.use('/api/v1/grocery-lists', groceryListRouter);
+  app.use('/api/v1/budgets', budgetRouter);
 
   /* ── 404 and error handling (must be last) ──────────────────────── */
   app.use(notFoundHandler);

@@ -3,10 +3,10 @@
 Update after every meaningful planning, design, or implementation change. Mark implementation complete only after inspecting the repository and verifying it.
 
 ## Current Phase
-**Phase 4 — Shops & Catalogue Management — COMPLETE.**
+**Phase 5 — Grocery Lists & Monthly Budget — COMPLETE.**
 
 ## Current Goal
-Await owner review and approval of Phase 4. Subsequent phases remain unstarted.
+Await owner review and approval of Phase 5. Subsequent phases remain unstarted.
 
 ---
 
@@ -171,16 +171,39 @@ Await owner review and approval of Phase 4. Subsequent phases remain unstarted.
 | `npm run build` | ✅ Compiled to `dist/` |
 | `npx prisma validate` | ✅ Schema valid |
 
+### Phase 5: Grocery Lists & Monthly Budget (2026-11-28)
+- [x] Grocery lists are restricted to exactly one approved shop.
+- [x] Customers can create, list, retrieve, rename, and delete their own grocery lists.
+- [x] Grocery-list items reference only available catalogue products from the list's shop.
+- [x] List item quantity create/update/delete operations enforce positive quantities.
+- [x] List estimates use decimal-safe cents and current authoritative catalogue prices.
+- [x] The source-list keep-or-clear choice remains prepared for order integration in Phase 6.
+- [x] Monthly budgets use `YYYY-MM` keys and one non-negative decimal amount per customer/month.
+- [x] Budget checks compare estimated totals against remaining budget after confirmed completed-order cash payments.
+- [x] Over-budget checks return explicit confirmation-required flags; no order or payment behavior was added.
+- [x] Added migration `20261128000000_phase_5_grocery_lists_and_budget`.
+
+### Phase 5 Verified Checks (all run, all pass)
+| Command | Result |
+|---|---|
+| `npm test` | ✅ 39/39 tests passed |
+| `npm run type-check` | ✅ No errors |
+| `npm run lint` | ✅ No errors |
+| `npm run format:check` | ✅ All files formatted |
+| `npm run build` | ✅ Compiled to `dist/` |
+| `npx prisma validate` | ✅ Schema valid |
+| `npx prisma migrate status` | ✅ 3 migrations; database up to date |
+
 ---
 
-## Implementation Status (Verified — 2026-11-27)
+## Implementation Status (Verified — 2026-11-28)
 - Repository/package manager: **npm 12.2.1 / Node.js 26.12.0**.
 - Backend: Express 5.3.0, TypeScript 5.9.3, fully configured. **Foundation complete.**
 - Frontend: Directory scaffolded. **No Next.js app yet (Phase 10).**
 - PostgreSQL/Prisma schema: **Phase 2 data model complete; 2 migrations applied.**
 - Authentication/authorization: **Phase 3 complete.**
 - Shop approval/catalogue: **Phase 4 complete.**
-- Grocery lists/budget: **Not implemented (Phase 5).**
+- Grocery lists/budget: **Phase 5 complete.**
 - Order lifecycle: **Not implemented (Phase 6).**
 - QR issue/replace/verify: **Not implemented (Phase 7).**
 - Cash payment confirmation: **Not implemented (Phase 8).**
@@ -205,7 +228,7 @@ Await owner review and approval of Phase 4. Subsequent phases remain unstarted.
 ---
 
 ## Open Questions
-1. **[BLOCKING Phase 5]** Are grocery lists global or shop-specific? Mixed-shop list behavior?
+1. **[Resolved]** Grocery lists are restricted to one approved shop; mixed-shop lists are not supported.
 2. **[BLOCKING Phase 7]** QR payload: opaque token (recommended) or readable order/customer data?
 3. **[BLOCKING Phase 7]** Exact start of 1-hour QR validity (assumed: QR issuance after acceptance).
 4. **[BLOCKING Phase 6–7]** Separate no-show/order-expiry duration and timer start point.
@@ -213,7 +236,7 @@ Await owner review and approval of Phase 4. Subsequent phases remain unstarted.
 6. **[Resolved]** Google Sign-In is not in scope for the current MVP.
 7. **[BLOCKING Phase 6]** Post-preparation change-request timeout/decline behavior.
 8. **[Post-MVP unless reprioritized]** Pantry scope, expiration window, MVP priority.
-9. **[Needs confirmation before Phase 5]** Monthly budget MVP priority.
+9. **[Resolved]** The monthly budget MVP is included in Phase 5.
 10. **[Needed before Phase 10]** Final UI branding (palette, fonts, logo, radius), deployment provider.
 
 ---

@@ -109,6 +109,7 @@ model User {
   approvedShops     Shop[]               @relation("ShopApprover")
   shopMembership    ShopStaff?
   groceryLists      GroceryList[]
+  monthlyBudgets    MonthlyBudget[]
   customerOrders    CustomerOrder[]      @relation("CustomerOrders")
   requestedChanges  OrderChangeRequest[] @relation("RequestedChanges")
   confirmedPayments Payment[]            @relation("PaymentConfirmer")
@@ -131,12 +132,13 @@ model Shop {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  owner      User            @relation("ShopOwner", fields: [ownerId], references: [id], onDelete: Restrict)
-  approvedBy User?           @relation("ShopApprover", fields: [approvedById], references: [id], onDelete: SetNull)
-  staff      ShopStaff[]
-  categories Category[]
-  products   Product[]
-  orders     CustomerOrder[]
+  owner        User            @relation("ShopOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  approvedBy   User?           @relation("ShopApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  staff        ShopStaff[]
+  categories   Category[]
+  products     Product[]
+  groceryLists GroceryList[]
+  orders       CustomerOrder[]
 
   @@index([ownerId])
   @@index([approvedById])
@@ -202,16 +204,35 @@ model Product {
 model GroceryList {
   id         String   @id @default(cuid())
   customerId String
+  shopId     String
   name       String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   owner  User              @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  shop   Shop              @relation(fields: [shopId], references: [id], onDelete: Restrict)
   items  GroceryListItem[]
   orders CustomerOrder[]   @relation("SourceGroceryList")
 
+  @@unique([customerId, shopId, name])
   @@index([customerId])
+  @@index([shopId])
   @@map("grocery_lists")
+}
+
+model MonthlyBudget {
+  id         String   @id @default(cuid())
+  customerId String
+  month      String
+  amount     Decimal  @db.Decimal(12, 2)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  owner User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, month])
+  @@index([month])
+  @@map("monthly_budgets")
 }
 
 model GroceryListItem {
