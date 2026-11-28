@@ -3,10 +3,10 @@
 Update after every meaningful planning, design, or implementation change. Mark implementation complete only after inspecting the repository and verifying it.
 
 ## Current Phase
-**Phase 5 — Grocery Lists & Monthly Budget — COMPLETE.**
+**Phase 6 — Order Management & Lifecycle — COMPLETE.**
 
 ## Current Goal
-Await owner review and approval of Phase 5. Subsequent phases remain unstarted.
+Await owner review and approval of Phase 6. Phase 7 and subsequent phases remain unstarted.
 
 ---
 
@@ -194,6 +194,35 @@ Await owner review and approval of Phase 5. Subsequent phases remain unstarted.
 | `npx prisma validate` | ✅ Schema valid |
 | `npx prisma migrate status` | ✅ 3 migrations; database up to date |
 
+### Phase 6: Order Management & Lifecycle (2026-11-28)
+- [x] Customers can place an order for one approved shop using direct catalogue items or a shop-specific grocery list.
+- [x] Placement loads authoritative current prices and creates purchase-time product name/unit-price snapshots transactionally.
+- [x] Placement validates shop approval, product ownership, availability, positive quantities, and grocery-list ownership/shop.
+- [x] Placement preserves the source grocery-list keep-or-clear choice and clears list items only when requested.
+- [x] Customers can retrieve and list own orders.
+- [x] Customers can update or cancel `PENDING`/`ACCEPTED` orders before preparation starts.
+- [x] Shop owners/staff can list, retrieve, accept, reject, start preparation, and mark preparation complete within their own shop.
+- [x] State transitions are explicitly guarded: `PENDING → ACCEPTED/REJECTED`, `ACCEPTED → PREPARING`, `PREPARING → READY_FOR_PICKUP`.
+- [x] QR issuance, QR verification, cash payment, notifications, and frontend functionality remain excluded.
+- [x] Preparing orders track post-preparation unavailable-item removals as separate `PENDING` change requests.
+- [x] The shop can create remove-item change requests only while an order is `PREPARING` and only when no request is already pending.
+- [x] The customer can explicitly approve a removal; approval deletes affected order items and recalculates subtotal/total.
+- [x] The customer can explicitly decline a removal; decline cancels the entire order and records the change request as `REJECTED`.
+- [x] Change-request timeout and automatic timeout behavior remain intentionally undefined; `expiresAt` is not assigned by Phase 6.
+- [x] No no-show expiry policy or `EXPIRED` transition was implemented.
+- [x] Added migration `20261128000000_phase_6_order_lifecycle` for removal change-item quantity constraints.
+
+### Phase 6 Verified Checks (all run, all pass)
+| Command | Result |
+|---|---|
+| `npm test` | ✅ 50/50 tests passed |
+| `npm run type-check` | ✅ No errors |
+| `npm run lint` | ✅ No errors |
+| `npm run format:check` | ✅ All files formatted |
+| `npm run build` | ✅ Compiled to `dist/` |
+| `npx prisma validate` | ✅ Schema valid |
+| `npx prisma migrate status` | ✅ 4 migrations; database up to date |
+
 ---
 
 ## Implementation Status (Verified — 2026-11-28)
@@ -204,7 +233,7 @@ Await owner review and approval of Phase 5. Subsequent phases remain unstarted.
 - Authentication/authorization: **Phase 3 complete.**
 - Shop approval/catalogue: **Phase 4 complete.**
 - Grocery lists/budget: **Phase 5 complete.**
-- Order lifecycle: **Not implemented (Phase 6).**
+- Order lifecycle: **Phase 6 complete.**
 - QR issue/replace/verify: **Not implemented (Phase 7).**
 - Cash payment confirmation: **Not implemented (Phase 8).**
 - Notifications: **Not implemented (Phase 9).**
@@ -231,10 +260,10 @@ Await owner review and approval of Phase 5. Subsequent phases remain unstarted.
 1. **[Resolved]** Grocery lists are restricted to one approved shop; mixed-shop lists are not supported.
 2. **[BLOCKING Phase 7]** QR payload: opaque token (recommended) or readable order/customer data?
 3. **[BLOCKING Phase 7]** Exact start of 1-hour QR validity (assumed: QR issuance after acceptance).
-4. **[BLOCKING Phase 6–7]** Separate no-show/order-expiry duration and timer start point.
+4. **[BLOCKING Phase 6–7]** Separate no-show/order-expiry duration and timer start point. **No policy implemented in Phase 6.**
 5. **[BLOCKING Phase 9]** Email/SMS providers, event-channel matrix, retry/failure policy.
 6. **[Resolved]** Google Sign-In is not in scope for the current MVP.
-7. **[BLOCKING Phase 6]** Post-preparation change-request timeout/decline behavior.
+7. **[Resolved behavior / open timeout]** Post-preparation changes use explicit customer approval or decline. Decline cancels the order. Automatic timeout and approval/cancellation behavior remain undefined and `expiresAt` is not assigned.
 8. **[Post-MVP unless reprioritized]** Pantry scope, expiration window, MVP priority.
 9. **[Resolved]** The monthly budget MVP is included in Phase 5.
 10. **[Needed before Phase 10]** Final UI branding (palette, fonts, logo, radius), deployment provider.

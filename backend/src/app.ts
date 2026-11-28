@@ -26,6 +26,11 @@ import { adminShopRouter, shopRouter } from './modules/shops/shop.routes.js';
 import { catalogueRouter } from './modules/catalogue/catalogue.routes.js';
 import { groceryListRouter } from './modules/grocery-lists/grocery-list.routes.js';
 import { budgetRouter } from './modules/budgets/budget.routes.js';
+import {
+  changeRequestRouter,
+  orderRouter,
+  shopOrderRouter,
+} from './modules/orders/order.routes.js';
 
 export function createApp() {
   const app = express();
@@ -71,6 +76,9 @@ export function createApp() {
   app.use('/api/v1/catalogue', catalogueRouter);
   app.use('/api/v1/grocery-lists', groceryListRouter);
   app.use('/api/v1/budgets', budgetRouter);
+  app.use('/api/v1/orders', orderRouter);
+  app.use('/api/v1/orders/changes', changeRequestRouter);
+  app.use('/api/v1/shops', shopOrderRouter);
 
   /* ── 404 and error handling (must be last) ──────────────────────── */
   app.use(notFoundHandler);
